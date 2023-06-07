@@ -39,6 +39,15 @@ resource "aws_instance" "app_server" {
     inline = [
       "sudo amazon-linux-extras install ansible2 -y",
       "sudo yum install git -y",
+      "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
+      "cd Configuration",
+      "git checkout feature/Jenkins",
+      "git pull",
+      "cd ..",
+      "ansible-playbook Configuration/Ansible/playbook.yaml",
+      "sudo chmod +x Configuration/Ansible/search_java_maven_paths.py",
+      "sudo sh Configuration/Ansible/Adding_path_to_bash_profile.sh"
+
     ]
   }
 }
