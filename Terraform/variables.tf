@@ -19,3 +19,15 @@ variable "ec2_ami_type" {
   type        = string
   default     = "ami-076bca9dd71a9a578"
 }
+
+
+variable "key_pair_jenkins" {
+  type    = string
+  default = "jenkinskeypair"
+}
+
+
+variable "key_pair_app_server" {
+  type    = string
+  default = "appkeypair"
+}

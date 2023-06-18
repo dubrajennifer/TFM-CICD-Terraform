@@ -11,7 +11,7 @@ resource "aws_vpc" "projen-env" {
 }
 
 resource "aws_eip" "ip-projen-env" {
-  instance = aws_instance.app_server.id
+  instance = aws_instance.app_openmeetings_server.id
   vpc      = true
 }
 
