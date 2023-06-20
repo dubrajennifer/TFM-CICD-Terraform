@@ -10,10 +10,10 @@ resource "aws_vpc" "projen-env" {
   }
 }
 
-resource "aws_eip" "ip-projen-env" {
-  instance = aws_instance.app_openmeetings_server.id
-  vpc      = true
-}
+# resource "aws_eip" "ip-projen-env" {
+#   instance = aws_instance.app_openmeetings_server.id
+#   vpc      = true
+# }
 
 //gateways.tf
 resource "aws_internet_gateway" "projen-env-gw" {
