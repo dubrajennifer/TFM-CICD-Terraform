@@ -43,7 +43,7 @@ variable "ec2_small_ami_type" {
 variable "ec2_medium_ami_type" {
   description = "AMI type "
   type        = string
-  default     = "ami-07dfed28fcf95241c"
+  default     = "ami-0ae49954dfb447966"
 }
 
 variable "key_pair_jenkins" {
