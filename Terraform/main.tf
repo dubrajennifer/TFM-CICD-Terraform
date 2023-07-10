@@ -54,31 +54,71 @@ resource "aws_instance" "jenkins_server" {
 }
 
 // App server
-# resource "aws_instance" "app_openmeetings_server" {
-#   ami                         = var.ec2_medium_ami_type
-#   instance_type               = var.ec2_medium_instance_type
-#   key_name                    = aws_key_pair.app_server_key_pair.key_name
-#   security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
-#   associate_public_ip_address = true
-#   subnet_id                   = aws_subnet.subnet-a.id
+resource "aws_instance" "app_openmeetings_server_1" {
+  ami                         = var.ec2_small_ami_type
+  instance_type               = var.ec2_small_instance_type
+  key_name                    = aws_key_pair.app_server_key_pair.key_name
+  security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.subnet-a.id
 
-#   tags = {
-#     Name = "App OpenMeeting Server"
-#   }
+  tags = {
+    Name = "App OpenMeeting Server A"
+  }
 
-#   connection {
-#     type        = "ssh"
-#     host        = self.public_ip
-#     user        = "ec2-user"
-#     password    = ""
-#     private_key = file("keypairs/${var.key_pair_app_server}.pem")
-#   }
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    password    = ""
+    private_key = file("keypairs/${var.key_pair_app_server}.pem")
+  }
 
-#   provisioner "remote-exec" {
-#     inline = [
-#       "sudo yum install git -y",
-#       "sudo yum install -y java-17-amazon-corretto",
-#       "source ~/.bashrc"
-#     ]
-#   }
-#}
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum install java-17-amazon-corretto -y",
+      "sudo yum install java-17-amazon-corretto-devel -y",
+      "sudo yum install java-17-amazon-corretto-jmods -y",
+      "export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64",
+      "sudo mkdir /openmeetings",
+      "sudo chmod 777 /openmeetings",
+      "sudo mkdir /openmeetings-app",
+      "sudo chmod 777 /openmeetings-app"
+    ]
+  }
+}
+
+// App server
+resource "aws_instance" "app_openmeetings_server_2" {
+  ami                         = var.ec2_small_ami_type
+  instance_type               = var.ec2_small_instance_type
+  key_name                    = aws_key_pair.app_server_key_pair.key_name
+  security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.subnet-a.id
+
+  tags = {
+    Name = "App OpenMeeting Server A"
+  }
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    password    = ""
+    private_key = file("keypairs/${var.key_pair_app_server}.pem")
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum install java-17-amazon-corretto -y",
+      "sudo yum install java-17-amazon-corretto-devel -y",
+      "sudo yum install java-17-amazon-corretto-jmods -y",
+      "export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64",
+      "sudo mkdir /openmeetings",
+      "sudo chmod 777 /openmeetings",
+      "sudo mkdir /openmeetings-app",
+      "sudo chmod 777 /openmeetings-app"
+    ]
+  }
+}
