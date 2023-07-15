@@ -27,3 +27,4 @@ resource "aws_key_pair" "app_server_key_pair" {
     command = "echo '${tls_private_key.app_server_key.private_key_pem}' > ./keypairs/${var.key_pair_app_server}.pem"
   }
 }
+

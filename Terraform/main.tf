@@ -14,7 +14,11 @@ provider "aws" {
 }
 
 
-// Jenkins server
+
+
+////////////////////////////////////////////////////////////////////
+//                          Jenkins                               //
+////////////////////////////////////////////////////////////////////
 resource "aws_instance" "jenkins_server" {
   ami                         = var.ec2_medium_ami_type
   instance_type               = var.ec2_medium_instance_type
@@ -53,10 +57,16 @@ resource "aws_instance" "jenkins_server" {
   }
 }
 
+
+
+////////////////////////////////////////////////////////////////////
+//                         APP SERVERS                            //
+////////////////////////////////////////////////////////////////////
+
 // App server
 resource "aws_instance" "app_openmeetings_server_1" {
-  ami                         = var.ec2_small_ami_type
-  instance_type               = var.ec2_small_instance_type
+  ami                         = var.ec2_ami_type
+  instance_type               = var.ec2_instance_type
   key_name                    = aws_key_pair.app_server_key_pair.key_name
   security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
   associate_public_ip_address = true
@@ -80,25 +90,27 @@ resource "aws_instance" "app_openmeetings_server_1" {
       "sudo yum install java-17-amazon-corretto-devel -y",
       "sudo yum install java-17-amazon-corretto-jmods -y",
       "export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64",
-      "sudo mkdir /openmeetings",
-      "sudo chmod 777 /openmeetings",
-      "sudo mkdir /openmeetings-app",
-      "sudo chmod 777 /openmeetings-app"
+      "sudo mkdir /home/ec2-user/openmeetings",
+      "sudo chmod 777 /home/ec2-user/openmeetings",
+      "sudo mkdir /home/ec2-user/openmeetings-app",
+      "sudo chmod 777 /home/ec2-user/openmeetings-app"
     ]
   }
 }
 
+
+
 // App server
 resource "aws_instance" "app_openmeetings_server_2" {
-  ami                         = var.ec2_small_ami_type
-  instance_type               = var.ec2_small_instance_type
+  ami                         = var.ec2_ami_type
+  instance_type               = var.ec2_instance_type
   key_name                    = aws_key_pair.app_server_key_pair.key_name
   security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.subnet-a.id
 
   tags = {
-    Name = "App OpenMeeting Server A"
+    Name = "App OpenMeeting Server B"
   }
 
   connection {
@@ -115,10 +127,10 @@ resource "aws_instance" "app_openmeetings_server_2" {
       "sudo yum install java-17-amazon-corretto-devel -y",
       "sudo yum install java-17-amazon-corretto-jmods -y",
       "export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64",
-      "sudo mkdir /openmeetings",
-      "sudo chmod 777 /openmeetings",
-      "sudo mkdir /openmeetings-app",
-      "sudo chmod 777 /openmeetings-app"
+      "sudo mkdir /home/ec2-user/openmeetings",
+      "sudo chmod 777 /home/ec2-user/openmeetings",
+      "sudo mkdir /home/ec2-user/openmeetings-app",
+      "sudo chmod 777 /home/ec2-user/openmeetings-app"
     ]
   }
 }
