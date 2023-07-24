@@ -134,3 +134,82 @@ resource "aws_instance" "app_openmeetings_server_2" {
     ]
   }
 }
+
+////////////////////////////////////////////////////////////////////
+//                            Nexus                               //
+////////////////////////////////////////////////////////////////////
+resource "aws_instance" "nexus_server" {
+  ami                         = var.ec2_small_ami_type
+  instance_type               = var.ec2_small_instance_type
+  key_name                    = aws_key_pair.nexus_key_pair.key_name
+  security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.subnet-a.id
+
+  tags = {
+    Name = "Nexus"
+  }
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    password    = ""
+    private_key = file("keypairs/${var.key_pair_nexus}.pem")
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo amazon-linux-extras install ansible2 -y",
+      "sudo yum install git -y",
+      "ansible-galaxy init nexus",
+      #Project
+      "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
+      "cd Configuration",
+      "git checkout feature/Nexus",
+      "cd ..",
+      "ansible-playbook  Configuration/Ansible/Nexus/playbook.yaml"
+    ]
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////
+//                          Sonarqube                             //
+////////////////////////////////////////////////////////////////////
+/*resource "aws_instance" "sonar_server" {
+  ami                         = var.ec2_ami_type
+  instance_type               = var.ec2_instance_type
+  key_name                    = aws_key_pair.sonar_key_pair.key_name
+  security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.subnet-a.id
+
+  tags = {
+    Name = "SonarQube"
+  }
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    password    = ""
+    private_key = file("keypairs/${var.key_pair_sonar}.pem")
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo amazon-linux-extras install ansible2 -y",
+      "sudo yum install git -y",
+      "ansible-galaxy init nexus-server",
+      #Project
+      "ansible-galaxy install ansible-thoteam.nexus3-oss",
+      "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
+      "cd Configuration",
+      "git checkout feature/Sonar",
+      "sudo yum install python2",
+      "sudo yum install docker",
+      "ansible-playbook  Configuration/Ansible/Nexus/playbook.yaml"
+    ]
+  }
+}*/

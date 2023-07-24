@@ -56,3 +56,8 @@ variable "key_pair_app_server" {
   type    = string
   default = "appkeypair"
 }
+
+variable "key_pair_nexus" {
+  type    = string
+  default = "nexuskeypair"
+}
