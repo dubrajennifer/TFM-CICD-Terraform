@@ -66,3 +66,8 @@ variable "key_pair_sonar" {
   type    = string
   default = "sonarkeypair"
 }
+
+variable "key_pair_redmine" {
+  type    = string
+  default = "redminekeypair"
+}
