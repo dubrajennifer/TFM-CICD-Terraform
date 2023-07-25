@@ -177,9 +177,9 @@ resource "aws_instance" "nexus_server" {
 ////////////////////////////////////////////////////////////////////
 //                          Sonarqube                             //
 ////////////////////////////////////////////////////////////////////
-/*resource "aws_instance" "sonar_server" {
-  ami                         = var.ec2_ami_type
-  instance_type               = var.ec2_instance_type
+resource "aws_instance" "sonar_server" {
+  ami                         = var.ec2_medium_ami_type
+  instance_type               = var.ec2_medium_instance_type
   key_name                    = aws_key_pair.sonar_key_pair.key_name
   security_groups             = ["${aws_security_group.allow_all_except_icmp_sg.id}"]
   associate_public_ip_address = true
@@ -201,15 +201,19 @@ resource "aws_instance" "nexus_server" {
     inline = [
       "sudo amazon-linux-extras install ansible2 -y",
       "sudo yum install git -y",
-      "ansible-galaxy init nexus-server",
       #Project
-      "ansible-galaxy install ansible-thoteam.nexus3-oss",
       "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
       "cd Configuration",
       "git checkout feature/Sonar",
-      "sudo yum install python2",
-      "sudo yum install docker",
-      "ansible-playbook  Configuration/Ansible/Nexus/playbook.yaml"
+      "cd ..",
+      "sudo amazon-linux-extras install docker -y",
+      # Download the latest version of Docker Compose
+      "sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose",
+      # Apply executable permissions to the binary
+      "sudo chmod +x /usr/local/bin/docker-compose",
+      # Create a symbolic link to make the binary accessible globally
+      "sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose",
+      "ansible-playbook Configuration/Ansible/Sonar/playbook.yaml"
     ]
   }
-}*/
+}

@@ -61,3 +61,8 @@ variable "key_pair_nexus" {
   type    = string
   default = "nexuskeypair"
 }
+
+variable "key_pair_sonar" {
+  type    = string
+  default = "sonarkeypair"
+}
