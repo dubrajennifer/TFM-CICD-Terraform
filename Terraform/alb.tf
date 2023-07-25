@@ -34,7 +34,7 @@ resource "aws_lb_target_group" "green_target" {
 
 resource "aws_lb_listener" "bluegreen_alb" {
   load_balancer_arn = aws_lb.bluegreen_alb.arn
-  port              = 80
+  port              = 5080
   protocol          = "HTTP"
 
   default_action {

@@ -51,6 +51,11 @@ variable "key_pair_jenkins" {
   default = "jenkinskeypair"
 }
 
+variable "stg_key_pair_app_server" {
+  type    = string
+  default = "STGappkeypair"
+}
+
 
 variable "key_pair_app_server" {
   type    = string
