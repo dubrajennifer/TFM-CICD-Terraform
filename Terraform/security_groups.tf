@@ -1,100 +1,11 @@
-//security.tf
-resource "aws_security_group" "ingress-all-sg" {
-  name   = "ingress-all-sg"
-  vpc_id = aws_vpc.projen-env.id
-  ingress {
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-  } // Terraform removes the default rule
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 
-resource "aws_security_group" "deny-all-sg" {
-  name   = "deny-all-sg"
-  vpc_id = aws_vpc.projen-env.id
-  ingress {
-    cidr_blocks = [
-      "0.0.0.0/0"
-    ]
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-  } // Terraform removes the default rule
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "ssh_only_sg" {
-  name        = "ssh-only-sg"
-  description = "Allow only SSH traffic"
-  vpc_id = aws_vpc.projen-env.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "allow_all_except_icmp_sg" {
-  name        = "allow-all-except-icmp-sg"
-  description = "Allow all traffic except ICMP (ping)"
-  vpc_id = aws_vpc.projen-env.id
-
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "ssh_and_port8080_sg" {
-  name        = "ssh-and-port8080-sg"
-  description = "Allow SSH (port 22) and port 8080 TCP traffic"
-  vpc_id = aws_vpc.projen-env.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+////////////////////////////////////////////////////////////////////
+//                         Jenkins                                //
+////////////////////////////////////////////////////////////////////
+resource "aws_security_group" "jenkins_sg" {
+  name        = "jenkins-sg"
+  description = "Security group to allow traffic to and from Jenkins"
+  vpc_id      = aws_vpc.projen-env.id
 
   ingress {
     from_port   = 8080
@@ -103,10 +14,482 @@ resource "aws_security_group" "ssh_and_port8080_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+
+  ingress {
+    from_port   = 50000
+    to_port     = 50000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  ingress {
+    from_port   = 9000
+    to_port     = 9000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  ingress {
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 9000
+    to_port     = 9000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 50000
+    to_port     = 50000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  } 
+
+  egress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  # Egress rule to block outbound ICMP traffic (ping)
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Block all outbound ICMP traffic (ping)"
+  }
+}
+
+////////////////////////////////////////////////////////////////////
+//                            Apps                                //
+////////////////////////////////////////////////////////////////////
+resource "aws_security_group" "allow_ports_5080_5443" {
+  name        = "AllowPorts5080And5443"
+  description = "Security group to allow traffic on ports 5080 and 5443"
+  vpc_id      = aws_vpc.projen-env.id
+
+  ingress {
+    from_port   = 5080
+    to_port     = 5080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 5443
+    to_port     = 5443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+    # Inbound rule for SSH (port 22)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+
+
+  egress {
+    from_port   = 5080
+    to_port     = 5080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 5443
+    to_port     = 5443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  } 
+
+  egress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+
+  # Egress rule to block outbound ICMP traffic (ping)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Block all outbound ICMP traffic (ping)"
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////
+//                            Nexus                               //
+////////////////////////////////////////////////////////////////////
+resource "aws_security_group" "nexus_sg" {
+  name        = "nexus-sg"
+  description = "Security group allowing SSH and port 8081 access"
+  vpc_id = aws_vpc.projen-env.id
+  
+  # Inbound rule for SSH (port 22)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  # Inbound rule for port 8081
+  ingress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////
+//                            Sonar                               //
+////////////////////////////////////////////////////////////////////
+resource "aws_security_group" "sonar_sg" {
+  name        = "sonar-sg"
+  description = "Security group allowing SSH and port 9000 access"
+  vpc_id = aws_vpc.projen-env.id
+  
+  # Inbound rule for SSH (port 22)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  # Inbound rule for port 9000
+  ingress {
+    from_port   = 9000
+    to_port     = 9000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  
+  # Inbound rule for port SMTPS
+  ingress {
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+  
+  egress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 9000
+    to_port     = 9000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+}
+
+////////////////////////////////////////////////////////////////////
+//                            Redmine                             //
+////////////////////////////////////////////////////////////////////
+resource "aws_security_group" "redmine_sg" {
+  name        = "redmine-sg"
+  description = "Security group allowing SSH and port 8080 access"
+  vpc_id = aws_vpc.projen-env.id
+  
+  # Inbound rule for SSH (port 22)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+}
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  # Inbound rule for port 8080
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  ingress {
+    description      = "Allow email notifications"
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  
+  egress {
+    description      = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    description      = "Allow email notifications"
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+}
+
+////////////////////////////////////////////////////////////////////
+//                            JMeter                              //
+////////////////////////////////////////////////////////////////////
+
+resource "aws_security_group" "jmeter_sg" {
+  name_prefix = "jmeter-sg"
+  description = "Security group for JMeter"
+  vpc_id = aws_vpc.projen-env.id
+
+  ingress {
+    description      = "Allow SSH connections"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  # Inbound rules - allow incoming traffic
+  ingress {
+    description      = "Allow HTTP traffic"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description      = "Allow HTTPS traffic"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    description      = "Allow Apps traffic"
+    from_port        = 5080
+    to_port          = 5080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    description      = "Allow Apps traffic"
+    from_port        = 5443
+    to_port          = 5443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow SSH connections"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  egress {
+    description      = "Allow APPs traffic"
+    from_port        = 5443
+    to_port          = 5443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow APPs traffic"
+    from_port        = 5080
+    to_port          = 5080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow HTTP traffic"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow HTTPS traffic"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
   }
 }

@@ -28,6 +28,13 @@ variable "ec2_medium_instance_type" {
 
 }
 
+variable "ec2_large_instance_type" {
+  description = "EC2 Instance type "
+  type        = string
+  default     = "t2.large"
+
+}
+
 variable "ec2_ami_type" {
   description = "AMI type "
   type        = string
@@ -44,6 +51,14 @@ variable "ec2_medium_ami_type" {
   description = "AMI type "
   type        = string
   default     = "ami-0ae49954dfb447966"
+}
+
+
+
+variable "ec2_large_ami_type" {
+  description = "AMI type "
+  type        = string
+  default     = "ami-0ea832bf7873542df"
 }
 
 variable "key_pair_jenkins" {
@@ -75,4 +90,9 @@ variable "key_pair_sonar" {
 variable "key_pair_redmine" {
   type    = string
   default = "redminekeypair"
+}
+
+variable "key_pair_jmeter" {
+  type    = string
+  default = "jmeterkeypair"
 }

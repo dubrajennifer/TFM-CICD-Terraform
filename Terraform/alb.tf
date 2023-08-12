@@ -46,7 +46,7 @@ resource "aws_lb_listener" "ab_alb" {
 
 resource "aws_lb_target_group_attachment" "a_attachment" {
   target_group_arn = aws_lb_target_group.a_target.arn
-  target_id        = aws_instance.app_openmeetings_server_1.id
+  target_id        = aws_instance.app_server_1.id
   port             = 5080
 }
 
