@@ -15,52 +15,6 @@ provider "aws" {
 
 
 
-
-////////////////////////////////////////////////////////////////////
-//                          Jenkins                               //
-////////////////////////////////////////////////////////////////////
-resource "aws_instance" "jenkins_server" {
-  ami                         = var.ec2_large_ami_type
-  instance_type               = var.ec2_large_instance_type
-  key_name                    = aws_key_pair.jenkins_key_pair.key_name
-  security_groups             = ["${aws_security_group.jenkins_sg.id}"]
-  associate_public_ip_address = true
-  subnet_id                   = aws_subnet.subnet-a.id
-
-  tags = {
-    Name = "Jenkins"
-  }
-
-  connection {
-    type        = "ssh"
-    host        = self.public_ip
-    user        = "ec2-user"
-    password    = ""
-    private_key = file("keypairs/${var.key_pair_jenkins}.pem")
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo amazon-linux-extras install ansible2 -y",
-      "sudo yum install git -y",
-      #Project
-      "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
-      "cd Configuration",
-      "git checkout feature/JenkinsConfig",
-      "cd ..",
-      # Ansible 
-      "ansible-playbook Configuration/Ansible/Jenkins/playbook.yml",
-      "sudo chmod +x Configuration/Ansible/Jenkins/search_java_maven_paths.py",
-      "sudo sh Configuration/Ansible/Jenkins/Adding_path_to_bash_profile.sh"
-      #Change initial user jenkins
-      #"echo 'jenkins_username=admin' >> /var/jenkins_home/secrets/initialAdminUser",
-      #"echo 'jenkins_password=jenkins' >> /var/jenkins_home/secrets/initialAdminPassword",
-
-      #"systemctl restart jenkins"  
-    ]
-  }
-}
-
 ////////////////////////////////////////////////////////////////////
 //                         APP SERVERS                            //
 ////////////////////////////////////////////////////////////////////
@@ -201,6 +155,9 @@ resource "aws_instance" "nexus_server" {
       "sudo yum install git -y",
       #Project
       "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
+      "cd Configuration",
+      "git checkout feature/OtherConfig",
+      "cd ..",
       "ansible-playbook  Configuration/Ansible/Nexus/playbook.yml"
     ]
   }
@@ -236,6 +193,9 @@ resource "aws_instance" "sonar_server" {
       "sudo yum install git -y",
       #Project
       "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
+      "cd Configuration",
+      "git checkout feature/OtherConfig",
+      "cd ..",
       "sudo amazon-linux-extras install docker -y",
       # Download the latest version of Docker Compose
       "sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose",
@@ -324,6 +284,69 @@ resource "aws_instance" "jmeter_server" {
       "git checkout feature/JMeter",
       "cd ..",
       "ansible-playbook  Configuration/Ansible/JMeter/playbook.yml"
+    ]
+  }
+}
+
+////////////////////////////////////////////////////////////////////
+//                          Jenkins                               //
+////////////////////////////////////////////////////////////////////
+resource "aws_instance" "jenkins_server" {
+  ami                         = var.ec2_large_ami_type
+  instance_type               = var.ec2_large_instance_type
+  key_name                    = aws_key_pair.jenkins_key_pair.key_name
+  security_groups             = ["${aws_security_group.jenkins_sg.id}"]
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.subnet-a.id
+
+  tags = {
+    Name = "Jenkins"
+  }
+
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    password    = ""
+    private_key = file("keypairs/${var.key_pair_jenkins}.pem")
+  }
+
+  provisioner "file" {
+    source      = "keypairs/${var.stg_key_pair_app_server}.pem"
+    destination = ".ssh/${var.stg_key_pair_app_server}.pem"  
+  }
+  
+  provisioner "file" {
+    source      = "keypairs/${var.key_pair_app_server}.pem"
+    destination = ".ssh/${var.key_pair_app_server}.pem"  
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo amazon-linux-extras install ansible2 -y",
+      "sudo yum install git -y",
+      #Project
+      "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
+      "echo '  - key: \"APP_BLUE_IP\"",
+      "    value: \"${aws_instance.app_server_1.public_ip}\"' >> Configuration/Ansible/Jenkins/jenkins/vars/environment_variables.yml",
+      "echo '  - key: \"APP_GREEN_IP\"",
+      "    value: \"${aws_instance.app_server_2.public_ip}\"' >> Configuration/Ansible/Jenkins/jenkins/vars/environment_variables.yml",
+      "echo '  - key: \"APP_STG_SERVER_IP\"",
+      "    value: \"${aws_instance.stg_app_server.public_ip}\"' >> Configuration/Ansible/Jenkins/jenkins/vars/environment_variables.yml",
+      "echo '  - key: \"NEXUS_IP\"",
+      "    value: \"${aws_instance.nexus_server.public_ip}:8081\"' >> Configuration/Ansible/Jenkins/jenkins/vars/environment_variables.yml",
+      "echo '  - key: \"APP_BLUE_ARN\"",
+      "    value: \"${aws_lb_target_group.a_target.arn}\"' >> Configuration/Ansible/Jenkins/jenkins/vars/environment_variables.yml",
+      "echo '  - key: \"APP_GREEN_ARN\"",
+      "    value: \"${aws_lb_target_group.b_target.arn}\"' >> Configuration/Ansible/Jenkins/jenkins/vars/environment_variables.yml",
+      "echo '  - key: \"APP_LISTENER_ARN\"",
+      "    value: \"${aws_lb.ab_alb.arn}\"' >> Configuration/Ansible/Jenkins/jenkins/vars/environment_variables.yml",
+      # Ansible 
+      #Change initial user jenkins
+      "ansible-playbook Configuration/Ansible/Jenkins/playbook.yml -e 'jenkins_admin_username=jenkins jenkins_admin_password=jenkins'"
+      #"echo 'jenkins_password=jenkins' >> /var/jenkins_home/secrets/initialAdminPassword",
+
+      #"systemctl restart jenkins"  
     ]
   }
 }
