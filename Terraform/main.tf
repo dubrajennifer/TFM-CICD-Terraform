@@ -155,9 +155,6 @@ resource "aws_instance" "nexus_server" {
       "sudo yum install git -y",
       #Project
       "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
-      "cd Configuration",
-      "git checkout feature/OtherConfig",
-      "cd ..",
       "ansible-playbook  Configuration/Ansible/Nexus/playbook.yml"
     ]
   }
@@ -193,9 +190,6 @@ resource "aws_instance" "sonar_server" {
       "sudo yum install git -y",
       #Project
       "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
-      "cd Configuration",
-      "git checkout feature/OtherConfig",
-      "cd ..",
       "sudo amazon-linux-extras install docker -y",
       # Download the latest version of Docker Compose
       "sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose",
@@ -209,47 +203,6 @@ resource "aws_instance" "sonar_server" {
 }
 
 
-////////////////////////////////////////////////////////////////////
-//                          Redmine                               //
-////////////////////////////////////////////////////////////////////
-resource "aws_instance" "redmine_server" {
-  ami                         = var.ec2_ami_type
-  instance_type               = var.ec2_instance_type
-  key_name                    = aws_key_pair.redmine_key_pair.key_name
-  security_groups             = ["${aws_security_group.redmine_sg.id}"]
-  associate_public_ip_address = true
-  subnet_id                   = aws_subnet.subnet-a.id
-
-  tags = {
-    Name = "Redmine"
-  }
-
-  connection {
-    type        = "ssh"
-    host        = self.public_ip
-    user        = "ec2-user"
-    password    = ""
-    private_key = file("keypairs/${var.key_pair_redmine}.pem")
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo amazon-linux-extras install ansible2 -y",
-      "sudo yum install git -y",
-      #Project
-      "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
-      "sudo amazon-linux-extras install docker -y",
-      # Download the latest version of Docker Compose
-      "sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose",
-      # Apply executable permissions to the binary
-      "sudo chmod +x /usr/local/bin/docker-compose",
-      # Create a symbolic link to make the binary accessible globally
-      "sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose",
-      "ansible-playbook Configuration/Ansible/Redmine/playbook.yml"
-    ]
-  }
-}
-  
 
 ////////////////////////////////////////////////////////////////////
 //                          JMeter                                //
@@ -280,9 +233,6 @@ resource "aws_instance" "jmeter_server" {
       "sudo yum install git -y",
       #Project
       "git clone https://github.com/dubrajennifer/TFM-CICD-Ansible.git Configuration",
-      "cd Configuration",
-      "git checkout feature/JMeter",
-      "cd ..",
       "ansible-playbook  Configuration/Ansible/JMeter/playbook.yml"
     ]
   }

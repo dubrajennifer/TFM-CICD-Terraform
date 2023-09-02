@@ -87,11 +87,6 @@ variable "key_pair_sonar" {
   default = "sonarkeypair"
 }
 
-variable "key_pair_redmine" {
-  type    = string
-  default = "redminekeypair"
-}
-
 variable "key_pair_jmeter" {
   type    = string
   default = "jmeterkeypair"
