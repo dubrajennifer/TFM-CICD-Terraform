@@ -14,24 +14,10 @@ resource "aws_security_group" "jenkins_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 8081
-    to_port     = 8081
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   ingress {
     from_port   = 80
     to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  
-
-  ingress {
-    from_port   = 50000
-    to_port     = 50000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -42,14 +28,6 @@ resource "aws_security_group" "jenkins_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] 
   }
-
-  ingress {
-    from_port   = 9000
-    to_port     = 9000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
-
   
   ingress {
     from_port   = 443
@@ -58,12 +36,6 @@ resource "aws_security_group" "jenkins_sg" {
     cidr_blocks = ["0.0.0.0/0"] 
   }
 
-  ingress {
-    from_port   = 465
-    to_port     = 465
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
 
   egress {
     from_port   = 9000
@@ -121,14 +93,13 @@ resource "aws_security_group" "jenkins_sg" {
     cidr_blocks = ["0.0.0.0/0"] 
   }
 
-  # Egress rule to block outbound ICMP traffic (ping)
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Block all outbound ICMP traffic (ping)"
+    from_port   = 5080
+    to_port     = 5080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
   }
+
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -196,16 +167,6 @@ resource "aws_security_group" "allow_ports_5080_5443" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] 
   }
-
-
-  # Egress rule to block outbound ICMP traffic (ping)
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Block all outbound ICMP traffic (ping)"
-  }
 }
 
 
@@ -225,12 +186,6 @@ resource "aws_security_group" "nexus_sg" {
     cidr_blocks = ["0.0.0.0/0"] 
   }
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
 
   # Inbound rule for port 8081
   ingress {
@@ -254,12 +209,6 @@ resource "aws_security_group" "nexus_sg" {
     cidr_blocks = ["0.0.0.0/0"] 
   }
 
-  egress {
-    from_port   = 8081
-    to_port     = 8081
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
 }
 
 
@@ -279,13 +228,6 @@ resource "aws_security_group" "sonar_sg" {
     cidr_blocks = ["0.0.0.0/0"] 
   }
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
-
   # Inbound rule for port 9000
   ingress {
     from_port   = 9000
@@ -294,15 +236,6 @@ resource "aws_security_group" "sonar_sg" {
     cidr_blocks = ["0.0.0.0/0"] 
   }
 
-  
-  # Inbound rule for port SMTPS
-  ingress {
-    from_port   = 465
-    to_port     = 465
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
-  
   egress {
     from_port   = 22
     to_port     = 22
@@ -313,13 +246,6 @@ resource "aws_security_group" "sonar_sg" {
   egress {
     from_port   = 443
     to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-  }
-
-  egress {
-    from_port   = 9000
-    to_port     = 9000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] 
   }
@@ -349,39 +275,7 @@ resource "aws_security_group" "jmeter_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] 
   }
-
-  # Inbound rules - allow incoming traffic
-  ingress {
-    description      = "Allow HTTP traffic"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description      = "Allow HTTPS traffic"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
   
-  ingress {
-    description      = "Allow Apps traffic"
-    from_port        = 5080
-    to_port          = 5080
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-  
-  ingress {
-    description      = "Allow Apps traffic"
-    from_port        = 5443
-    to_port          = 5443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
 
   egress {
     description      = "Allow SSH connections"

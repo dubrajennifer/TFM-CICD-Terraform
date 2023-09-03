@@ -47,8 +47,8 @@ resource "aws_lb_target_group_attachment" "b_attachment" {
 
 resource "aws_lb_listener" "ab_alb" {
   load_balancer_arn = aws_lb.ab_alb.arn
-  port              = "443"
-  protocol          = "HTTPS"
+  port              = "80"
+  protocol          = "HTTP"
   depends_on        = [aws_lb_target_group.a_target, aws_lb_target_group.b_target]
 
   default_action {
