@@ -52,38 +52,18 @@ resource "aws_lb_listener" "ab_alb" {
   depends_on        = [aws_lb_target_group.a_target, aws_lb_target_group.b_target]
 
   default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      status_code  = 200
-      message_body = "OK"
-    }
-  }
-}
-      
-
-resource "aws_lb_listener_rule" "ab_target_rule" {
-  listener_arn = aws_lb_listener.ab_alb.arn
-  priority     = 100
-
-  action {
-    type             = "forward"
+    type = "forward"
     forward {
       target_group {
-        arn = aws_lb_target_group.a_target.arn
+        arn    = aws_lb_target_group.a_target.arn
         weight = 1
       }
 
       target_group {
-        arn = aws_lb_target_group.b_target.arn
+        arn    = aws_lb_target_group.b_target.arn
         weight = 1
       }
     }
   }
-
-  condition {
-    path_pattern {
-      values = ["/*"]
-    }
-  }
 }
+     
